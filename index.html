@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7eee9" />
+    <meta
+      name="description"
+      content="ふたりの3ヶ月をまとめた、小さな記念アルバム。"
+    />
+    <title>3 months with you</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="paper-noise" aria-hidden="true"></div>
+
+    <header class="hero" id="top">
+      <nav class="nav wrap" aria-label="ページ内ナビゲーション">
+        <a class="nav__brand" href="#top" aria-label="ページの先頭へ">M <span>♡</span> Y</a>
+        <div class="nav__links">
+          <a href="#memories">思い出</a>
+          <a href="#letter">手紙</a>
+        </div>
+      </nav>
+
+      <div class="hero__content wrap">
+        <p class="eyebrow">OUR THIRD MONTH TOGETHER</p>
+        <h1>
+          <span>3 months</span>
+          <em>with you.</em>
+        </h1>
+        <p class="hero__lead">
+          何気ない毎日も、君とならちゃんと思い出になる。<br />
+          ふたりで過ごした3ヶ月を、この小さなページに。
+        </p>
+        <a class="scroll-link" href="#memories">
+          思い出をめくる
+          <span aria-hidden="true">↓</span>
+        </a>
+      </div>
+
+      <div class="hero__photo hero__photo--one" aria-hidden="true">
+        <div class="photo-placeholder photo-placeholder--sunset">
+          <span>01</span><img data-memory-index="0" alt="" />
+        </div>
+      </div>
+      <div class="hero__photo hero__photo--two" aria-hidden="true">
+        <div class="photo-placeholder photo-placeholder--blue">
+          <span>02</span><img data-memory-index="1" alt="" />
+        </div>
+      </div>
+      <p class="hero__scribble" aria-hidden="true">still choosing you ♡</p>
+    </header>
+
+    <main>
+      <section class="intro wrap" aria-labelledby="intro-title">
+        <p class="section-number">01 / THREE MONTHS</p>
+        <div class="intro__grid">
+          <h2 id="intro-title">短いようで、<br />ぎゅっと濃い3ヶ月。</h2>
+          <div>
+            <p>
+              初めて一緒に行った場所、たくさん笑った日、なんでもない帰り道。
+              ひとつひとつが、今のふたりをつくってくれた大切な時間です。
+            </p>
+            <dl class="counter" aria-label="記念日の情報">
+              <div><dt id="daysTogether">90</dt><dd>days together</dd></div>
+              <div><dt>∞</dt><dd>more memories</dd></div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section class="memories" id="memories" aria-labelledby="memories-title">
+        <div class="wrap">
+          <div class="section-heading">
+            <div>
+              <p class="section-number">02 / OUR MEMORIES</p>
+              <h2 id="memories-title">ふたりの思い出</h2>
+            </div>
+            <p>写真をタップすると、大きく見られます。</p>
+          </div>
+
+          <div class="gallery" id="gallery" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="quote-section" aria-label="メッセージ">
+        <div class="quote-section__line" aria-hidden="true"></div>
+        <blockquote>
+          “The best thing to hold onto in life<br />is each other.”
+          <cite>— Audrey Hepburn</cite>
+        </blockquote>
+        <span class="doodle-heart" aria-hidden="true">♡</span>
+      </section>
+
+      <section class="letter wrap" id="letter" aria-labelledby="letter-title">
+        <div class="letter__photo" aria-hidden="true">
+          <div class="photo-placeholder photo-placeholder--warm">
+            <span>US</span><img data-memory-index="3" alt="" />
+          </div>
+          <small>my favorite place is next to you</small>
+        </div>
+
+        <article class="letter__paper">
+          <p class="section-number">03 / A LETTER FOR YOU</p>
+          <h2 id="letter-title">大好きな君へ。</h2>
+          <div id="letterBody">
+            <p>付き合って3ヶ月。</p>
+            <p>
+              いつもそばにいてくれてありがとう。君と出会ってから、何気ない毎日が前よりずっと特別になりました。
+            </p>
+            <p>
+              これからもたくさん笑って、いろんな場所に行って、ふたりだけの思い出を増やしていこうね。
+            </p>
+          </div>
+          <p class="letter__sign">これからもよろしくね <span>♡</span></p>
+        </article>
+      </section>
+
+      <section class="next-chapter" aria-label="これからについて">
+        <div class="wrap">
+          <p class="eyebrow">TO BE CONTINUED...</p>
+          <h2>次の思い出も、<br />その次も。</h2>
+          <p>4ヶ月目も、ふたりらしく。</p>
+          <a href="#top">最初に戻る ↑</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Made with love for our 3rd month anniversary.</p>
+      <p id="anniversaryDate">2026.00.00</p>
+    </footer>
+
+    <dialog class="lightbox" id="lightbox" aria-label="写真を拡大表示">
+      <button class="lightbox__close" type="button" aria-label="閉じる">×</button>
+      <button class="lightbox__nav lightbox__nav--prev" type="button" aria-label="前の写真">←</button>
+      <figure>
+        <img id="lightboxImage" alt="" />
+        <figcaption id="lightboxCaption"></figcaption>
+      </figure>
+      <button class="lightbox__nav lightbox__nav--next" type="button" aria-label="次の写真">→</button>
+    </dialog>
+
+    <script src="script.js"></script>
+  </body>
+</html>
