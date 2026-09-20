@@ -4,3 +4,4 @@ images/*.JPG
 images/*.JPEG
 images/*.jpg
 images/*.jpeg
+!images/slide-*.jpg

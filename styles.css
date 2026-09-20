@@ -47,7 +47,7 @@ button {
 }
 
 .mosaic {
-  z-index: -4;
+  z-index: 0;
   display: grid;
   grid-template-rows: repeat(4, minmax(0, 1fr));
   gap: 0;
@@ -107,14 +107,14 @@ button {
 }
 
 .shade {
-  z-index: -3;
+  z-index: 1;
   background:
     linear-gradient(180deg, rgba(20, 14, 13, 0.48) 0%, rgba(20, 14, 13, 0.15) 27%, rgba(20, 14, 13, 0.34) 67%, rgba(20, 14, 13, 0.78) 100%),
     radial-gradient(circle at center, rgba(45, 30, 28, 0.04), rgba(30, 20, 18, 0.44));
 }
 
 .grain {
-  z-index: -2;
+  z-index: 2;
   pointer-events: none;
   opacity: 0.24;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");
@@ -122,6 +122,8 @@ button {
 }
 
 .hero {
+  position: relative;
+  z-index: 3;
   width: min(100% - 44px, 470px);
   padding: max(50px, env(safe-area-inset-top)) 0 max(50px, env(safe-area-inset-bottom));
   text-align: center;

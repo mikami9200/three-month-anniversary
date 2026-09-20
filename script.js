@@ -44,6 +44,10 @@ function createPhotoGroup(photos) {
     image.alt = "";
     image.loading = "eager";
     image.addEventListener("error", () => {
+      if (image.src.endsWith(".webp")) {
+        image.src = file.replace(".webp", ".jpg");
+        return;
+      }
       cell.style.background = "linear-gradient(145deg, #b28f84, #5b4b48)";
       image.remove();
     });
@@ -74,7 +78,7 @@ function createMosaic() {
     );
 
     const firstGroup = createPhotoGroup(orderedPhotos);
-    const secondGroup = firstGroup.cloneNode(true);
+    const secondGroup = createPhotoGroup(orderedPhotos);
     track.append(firstGroup, secondGroup);
     row.appendChild(track);
     mosaic.appendChild(row);
