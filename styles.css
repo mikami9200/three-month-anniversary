@@ -139,7 +139,7 @@ button {
 }
 
 .heart-mark {
-  margin-bottom: -3px;
+  margin-bottom: 14px;
   color: #f1b2af;
   font-family: Georgia, serif;
   font-size: 32px;
@@ -334,8 +334,7 @@ button {
   letter-spacing: -0.05em;
 }
 
-.letter-body p,
-.letter-sign {
+.letter-body p {
   font-family: var(--serif);
   font-size: 13px;
   line-height: 2.25;
@@ -345,17 +344,8 @@ button {
   margin: 0 0 18px;
 }
 
-.letter-sign {
-  margin: 29px 0 28px;
-  text-align: right;
-}
-
-.letter-sign span {
-  color: var(--rose-dark);
-  font-size: 18px;
-}
-
 .letter-finish {
+  margin-top: 12px;
   width: 100%;
   min-height: 50px;
   border: 0;
