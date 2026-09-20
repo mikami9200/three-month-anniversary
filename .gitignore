@@ -1,0 +1,6 @@
+# 元のカメラ写真は公開リポジトリへ載せない
+images/*.HEIC
+images/*.JPG
+images/*.JPEG
+images/*.jpg
+images/*.jpeg

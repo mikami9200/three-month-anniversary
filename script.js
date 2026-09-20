@@ -1,138 +1,159 @@
 // ================================================================
-// ここだけ書き換えれば、日付・写真・文章を自分たち用に変更できます。
-// 写真は images フォルダに入れて、file の名前を合わせてください。
+// 写真・日付・キャプションは、ここを書き換えるだけで変更できます。
+// 写真は横向きの4:3比率がおすすめです。
 // ================================================================
 const pageData = {
-  // 付き合い始めた日（例: 2026-06-20）
-  startedOn: "2026-06-20",
-
-  // 3ヶ月記念日（例: 2026-09-20）
   anniversaryOn: "2026-09-20",
-
-  memories: [
+  slideInterval: 5000,
+  photos: [
     {
-      file: "images/memory-01.jpg",
-      title: "はじめてのデート",
-      date: "2026.06",
-      placeholder: "01",
-      colors: ["#c9a493", "#77645d"],
+      file: "images/slide-01.webp",
+      caption: "一緒に作った日の思い出",
+      colors: ["#c89c8c", "#64504c"],
     },
     {
-      file: "images/memory-02.jpg",
-      title: "一緒に見た景色",
-      date: "2026.07",
-      placeholder: "02",
-      colors: ["#9aa6a0", "#5f7777"],
+      file: "images/slide-02.webp",
+      caption: "夏の夜の思い出",
+      colors: ["#91a9aa", "#4c6568"],
     },
     {
-      file: "images/memory-03.jpg",
-      title: "たくさん笑った日",
-      date: "2026.08",
-      placeholder: "03",
-      colors: ["#d2b9a7", "#977c70"],
+      file: "images/slide-03.webp",
+      caption: "ふたりで過ごす休日",
+      colors: ["#ceb09e", "#8f7269"],
     },
     {
-      file: "images/memory-04.jpg",
-      title: "これからもふたりで",
-      date: "2026.09",
-      placeholder: "04",
-      colors: ["#9d9a8c", "#66665d"],
+      file: "images/slide-04.webp",
+      caption: "何気ない日も特別に",
+      colors: ["#9b9b88", "#595c53"],
+    },
+    {
+      file: "images/slide-05.webp",
+      caption: "一緒に歩いた街",
+      colors: ["#a99b8d", "#5c5956"],
+    },
+    {
+      file: "images/slide-06.webp",
+      caption: "ふたりのおでかけ",
+      colors: ["#b49a8c", "#66534c"],
+    },
+    {
+      file: "images/slide-07.webp",
+      caption: "君の笑顔が好き",
+      colors: ["#b9a28f", "#685b52"],
+    },
+    {
+      file: "images/slide-08.webp",
+      caption: "これからもふたりで",
+      colors: ["#8b8f8b", "#505957"],
     },
   ],
 };
 
-const gallery = document.querySelector("#gallery");
-const lightbox = document.querySelector("#lightbox");
-const lightboxImage = document.querySelector("#lightboxImage");
-const lightboxCaption = document.querySelector("#lightboxCaption");
-let currentIndex = 0;
+const slideshow = document.querySelector("#slideshow");
+const celebration = document.querySelector(".celebration");
+const dotsContainer = document.querySelector("#slideDots");
+const caption = document.querySelector("#slideCaption");
+const letterDialog = document.querySelector("#letterDialog");
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+let currentSlide = 0;
+let autoPlayTimer;
+let touchStartX = 0;
 
 function formatDate(dateString) {
-  const [year, month, day] = dateString.split("-");
-  return `${year}.${month}.${day}`;
+  return dateString.replaceAll("-", ".");
 }
 
-function calculateDaysTogether() {
-  const start = new Date(`${pageData.startedOn}T00:00:00`);
-  const anniversary = new Date(`${pageData.anniversaryOn}T00:00:00`);
-  const diff = Math.round((anniversary - start) / 86_400_000);
-  return Number.isFinite(diff) && diff >= 0 ? diff : 90;
-}
+function createSlides() {
+  pageData.photos.forEach((photo, index) => {
+    const slide = document.createElement("div");
+    slide.className = `slide${index === 0 ? " is-active" : ""}`;
+    slide.style.setProperty("--color-a", photo.colors[0]);
+    slide.style.setProperty("--color-b", photo.colors[1]);
+    slide.innerHTML = `
+      <span class="slide__number">0${index + 1}</span>
+      <img class="slide__blur" src="${photo.file}" alt="" />
+      <img class="slide__photo" src="${photo.file}" alt="" />
+    `;
+    slide.querySelectorAll("img").forEach((image) => {
+      image.addEventListener("error", (event) => event.currentTarget.remove());
+    });
+    slideshow.appendChild(slide);
 
-function createMemoryCard(memory, index) {
-  const card = document.createElement("figure");
-  card.className = "memory-card";
-  card.innerHTML = `
-    <button type="button" aria-label="${memory.title}の写真を拡大する">
-      <div class="memory-card__image">
-        <img src="${memory.file}" alt="${memory.title}" loading="lazy" />
-      </div>
-    </button>
-    <figcaption>
-      <span>${memory.title}</span>
-      <time>${memory.date}</time>
-    </figcaption>
-  `;
-
-  const image = card.querySelector("img");
-  image.addEventListener("error", () => {
-    const fallback = document.createElement("div");
-    fallback.className = "memory-card__fallback";
-    fallback.style.setProperty("--fallback-a", memory.colors[0]);
-    fallback.style.setProperty("--fallback-b", memory.colors[1]);
-    fallback.textContent = memory.placeholder;
-    image.replaceWith(fallback);
+    const dot = document.createElement("button");
+    dot.className = `slide-dot${index === 0 ? " is-active" : ""}`;
+    dot.type = "button";
+    dot.setAttribute("aria-label", `${index + 1}枚目の写真を見る`);
+    dot.addEventListener("click", () => showSlide(index, true));
+    dotsContainer.appendChild(dot);
   });
-
-  card.querySelector("button").addEventListener("click", () => openLightbox(index));
-  return card;
 }
 
-function openLightbox(index) {
-  const memory = pageData.memories[index];
-  const probe = new Image();
-  probe.onload = () => {
-    currentIndex = index;
-    lightboxImage.src = memory.file;
-    lightboxImage.alt = memory.title;
-    lightboxCaption.textContent = `${memory.title}  —  ${memory.date}`;
-    if (!lightbox.open) lightbox.showModal();
-  };
-  // 写真未設定のプレースホルダーは拡大しない
-  probe.onerror = () => {};
-  probe.src = memory.file;
+function showSlide(index, restart = false) {
+  const slides = [...document.querySelectorAll(".slide")];
+  const dots = [...document.querySelectorAll(".slide-dot")];
+  currentSlide = (index + slides.length) % slides.length;
+
+  slides.forEach((slide, slideIndex) => {
+    slide.classList.toggle("is-active", slideIndex === currentSlide);
+  });
+  dots.forEach((dot, dotIndex) => {
+    dot.classList.toggle("is-active", dotIndex === currentSlide);
+  });
+  caption.textContent = pageData.photos[currentSlide].caption;
+
+  if (restart) startAutoPlay();
 }
 
-function moveLightbox(direction) {
-  const nextIndex = (currentIndex + direction + pageData.memories.length) % pageData.memories.length;
-  openLightbox(nextIndex);
+function startAutoPlay() {
+  window.clearInterval(autoPlayTimer);
+  if (reduceMotion || pageData.photos.length < 2) return;
+  autoPlayTimer = window.setInterval(() => showSlide(currentSlide + 1), pageData.slideInterval);
 }
 
-pageData.memories.forEach((memory, index) => {
-  gallery.appendChild(createMemoryCard(memory, index));
+function openLetter() {
+  window.clearInterval(autoPlayTimer);
+  letterDialog.showModal();
+  document.body.style.overflow = "hidden";
+}
+
+function closeLetter() {
+  letterDialog.close();
+  document.body.style.overflow = "";
+  startAutoPlay();
+}
+
+createSlides();
+showSlide(0);
+startAutoPlay();
+
+const formattedDate = formatDate(pageData.anniversaryOn);
+document.querySelector("#anniversaryDate").textContent = formattedDate;
+document.querySelector("#letterDate").textContent = formattedDate;
+
+document.querySelector("#previousSlide").addEventListener("click", () => showSlide(currentSlide - 1, true));
+document.querySelector("#nextSlide").addEventListener("click", () => showSlide(currentSlide + 1, true));
+document.querySelector("#openLetter").addEventListener("click", openLetter);
+document.querySelectorAll("[data-close-letter]").forEach((button) => {
+  button.addEventListener("click", closeLetter);
 });
 
-// 先頭と手紙部分にも、ギャラリーと同じ写真を自動で表示します。
-document.querySelectorAll("[data-memory-index]").forEach((image) => {
-  const memory = pageData.memories[Number(image.dataset.memoryIndex)];
-  if (!memory) return;
-  image.addEventListener("error", () => image.remove());
-  image.src = memory.file;
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) window.clearInterval(autoPlayTimer);
+  else if (!letterDialog.open) startAutoPlay();
 });
 
-document.querySelector("#daysTogether").textContent = calculateDaysTogether();
-document.querySelector("#anniversaryDate").textContent = formatDate(pageData.anniversaryOn);
+celebration.addEventListener("touchstart", (event) => {
+  touchStartX = event.changedTouches[0].clientX;
+}, { passive: true });
 
-document.querySelector(".lightbox__close").addEventListener("click", () => lightbox.close());
-document.querySelector(".lightbox__nav--prev").addEventListener("click", () => moveLightbox(-1));
-document.querySelector(".lightbox__nav--next").addEventListener("click", () => moveLightbox(1));
+celebration.addEventListener("touchend", (event) => {
+  const distance = event.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(distance) < 45) return;
+  showSlide(currentSlide + (distance < 0 ? 1 : -1), true);
+}, { passive: true });
 
-lightbox.addEventListener("click", (event) => {
-  if (event.target === lightbox) lightbox.close();
-});
-
-document.addEventListener("keydown", (event) => {
-  if (!lightbox.open) return;
-  if (event.key === "ArrowLeft") moveLightbox(-1);
-  if (event.key === "ArrowRight") moveLightbox(1);
+letterDialog.addEventListener("cancel", () => {
+  document.body.style.overflow = "";
+  startAutoPlay();
 });
