@@ -10,6 +10,14 @@
 - `slide-06.webp`
 - `slide-07.webp`
 - `slide-08.webp`
+- `slide-09.webp`
+- `slide-10.webp`
+- `slide-11.webp`
+- `slide-12.webp`
+- `slide-13.webp`
+- `slide-14.webp`
+- `slide-15.webp`
+- `slide-16.webp`
 
 写真の枚数やファイル名は、`script.js` の `photos` で変更できます。
 JPEG のほか、PNG や WebP も使用できます。その場合は `file` の拡張子も合わせてください。

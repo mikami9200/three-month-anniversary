@@ -1,118 +1,87 @@
 // ================================================================
-// 写真・日付・キャプションは、ここを書き換えるだけで変更できます。
-// 写真は横向きの4:3比率がおすすめです。
+// 写真・日付はここで変更できます。
+// 背景は4段で、左・右へ交互に流れ続けます。
 // ================================================================
 const pageData = {
   anniversaryOn: "2026-09-20",
-  slideInterval: 5000,
   photos: [
-    {
-      file: "images/slide-01.webp",
-      caption: "一緒に作った日の思い出",
-      colors: ["#c89c8c", "#64504c"],
-    },
-    {
-      file: "images/slide-02.webp",
-      caption: "夏の夜の思い出",
-      colors: ["#91a9aa", "#4c6568"],
-    },
-    {
-      file: "images/slide-03.webp",
-      caption: "ふたりで過ごす休日",
-      colors: ["#ceb09e", "#8f7269"],
-    },
-    {
-      file: "images/slide-04.webp",
-      caption: "何気ない日も特別に",
-      colors: ["#9b9b88", "#595c53"],
-    },
-    {
-      file: "images/slide-05.webp",
-      caption: "一緒に歩いた街",
-      colors: ["#a99b8d", "#5c5956"],
-    },
-    {
-      file: "images/slide-06.webp",
-      caption: "ふたりのおでかけ",
-      colors: ["#b49a8c", "#66534c"],
-    },
-    {
-      file: "images/slide-07.webp",
-      caption: "君の笑顔が好き",
-      colors: ["#b9a28f", "#685b52"],
-    },
-    {
-      file: "images/slide-08.webp",
-      caption: "これからもふたりで",
-      colors: ["#8b8f8b", "#505957"],
-    },
+    "images/slide-01.webp",
+    "images/slide-02.webp",
+    "images/slide-03.webp",
+    "images/slide-04.webp",
+    "images/slide-05.webp",
+    "images/slide-06.webp",
+    "images/slide-07.webp",
+    "images/slide-08.webp",
+    "images/slide-09.webp",
+    "images/slide-10.webp",
+    "images/slide-11.webp",
+    "images/slide-12.webp",
+    "images/slide-13.webp",
+    "images/slide-14.webp",
+    "images/slide-15.webp",
+    "images/slide-16.webp",
   ],
 };
 
-const slideshow = document.querySelector("#slideshow");
-const celebration = document.querySelector(".celebration");
-const dotsContainer = document.querySelector("#slideDots");
-const caption = document.querySelector("#slideCaption");
+const mosaic = document.querySelector("#mosaic");
 const letterDialog = document.querySelector("#letterDialog");
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-let currentSlide = 0;
-let autoPlayTimer;
-let touchStartX = 0;
 
 function formatDate(dateString) {
   return dateString.replaceAll("-", ".");
 }
 
-function createSlides() {
-  pageData.photos.forEach((photo, index) => {
-    const slide = document.createElement("div");
-    slide.className = `slide${index === 0 ? " is-active" : ""}`;
-    slide.style.setProperty("--color-a", photo.colors[0]);
-    slide.style.setProperty("--color-b", photo.colors[1]);
-    slide.innerHTML = `
-      <span class="slide__number">0${index + 1}</span>
-      <img class="slide__blur" src="${photo.file}" alt="" />
-      <img class="slide__photo" src="${photo.file}" alt="" />
-    `;
-    slide.querySelectorAll("img").forEach((image) => {
-      image.addEventListener("error", (event) => event.currentTarget.remove());
+function createPhotoGroup(photos) {
+  const group = document.createElement("div");
+  group.className = "mosaic-group";
+
+  photos.forEach((file) => {
+    const cell = document.createElement("div");
+    cell.className = "mosaic-cell";
+
+    const image = document.createElement("img");
+    image.src = file;
+    image.alt = "";
+    image.loading = "eager";
+    image.addEventListener("error", () => {
+      cell.style.background = "linear-gradient(145deg, #b28f84, #5b4b48)";
+      image.remove();
     });
-    slideshow.appendChild(slide);
 
-    const dot = document.createElement("button");
-    dot.className = `slide-dot${index === 0 ? " is-active" : ""}`;
-    dot.type = "button";
-    dot.setAttribute("aria-label", `${index + 1}枚目の写真を見る`);
-    dot.addEventListener("click", () => showSlide(index, true));
-    dotsContainer.appendChild(dot);
+    cell.appendChild(image);
+    group.appendChild(cell);
   });
+
+  return group;
 }
 
-function showSlide(index, restart = false) {
-  const slides = [...document.querySelectorAll(".slide")];
-  const dots = [...document.querySelectorAll(".slide-dot")];
-  currentSlide = (index + slides.length) % slides.length;
+function createMosaic() {
+  const rowSpeeds = [27, 31, 29, 33];
 
-  slides.forEach((slide, slideIndex) => {
-    slide.classList.toggle("is-active", slideIndex === currentSlide);
-  });
-  dots.forEach((dot, dotIndex) => {
-    dot.classList.toggle("is-active", dotIndex === currentSlide);
-  });
-  caption.textContent = pageData.photos[currentSlide].caption;
+  for (let rowIndex = 0; rowIndex < 4; rowIndex += 1) {
+    const row = document.createElement("div");
+    const direction = rowIndex % 2 === 0 ? "left" : "right";
+    row.className = `mosaic-row mosaic-row--${direction}`;
+    row.style.setProperty("--flow-duration", `${rowSpeeds[rowIndex]}s`);
 
-  if (restart) startAutoPlay();
-}
+    const track = document.createElement("div");
+    track.className = "mosaic-track";
 
-function startAutoPlay() {
-  window.clearInterval(autoPlayTimer);
-  if (reduceMotion || pageData.photos.length < 2) return;
-  autoPlayTimer = window.setInterval(() => showSlide(currentSlide + 1), pageData.slideInterval);
+    const offset = rowIndex * 4;
+    const orderedPhotos = Array.from(
+      { length: 8 },
+      (_, photoIndex) => pageData.photos[(offset + photoIndex) % pageData.photos.length],
+    );
+
+    const firstGroup = createPhotoGroup(orderedPhotos);
+    const secondGroup = firstGroup.cloneNode(true);
+    track.append(firstGroup, secondGroup);
+    row.appendChild(track);
+    mosaic.appendChild(row);
+  }
 }
 
 function openLetter() {
-  window.clearInterval(autoPlayTimer);
   letterDialog.showModal();
   document.body.style.overflow = "hidden";
 }
@@ -120,40 +89,16 @@ function openLetter() {
 function closeLetter() {
   letterDialog.close();
   document.body.style.overflow = "";
-  startAutoPlay();
 }
 
-createSlides();
-showSlide(0);
-startAutoPlay();
+createMosaic();
+document.querySelector("#letterDate").textContent = formatDate(pageData.anniversaryOn);
 
-const formattedDate = formatDate(pageData.anniversaryOn);
-document.querySelector("#anniversaryDate").textContent = formattedDate;
-document.querySelector("#letterDate").textContent = formattedDate;
-
-document.querySelector("#previousSlide").addEventListener("click", () => showSlide(currentSlide - 1, true));
-document.querySelector("#nextSlide").addEventListener("click", () => showSlide(currentSlide + 1, true));
 document.querySelector("#openLetter").addEventListener("click", openLetter);
 document.querySelectorAll("[data-close-letter]").forEach((button) => {
   button.addEventListener("click", closeLetter);
 });
 
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) window.clearInterval(autoPlayTimer);
-  else if (!letterDialog.open) startAutoPlay();
-});
-
-celebration.addEventListener("touchstart", (event) => {
-  touchStartX = event.changedTouches[0].clientX;
-}, { passive: true });
-
-celebration.addEventListener("touchend", (event) => {
-  const distance = event.changedTouches[0].clientX - touchStartX;
-  if (Math.abs(distance) < 45) return;
-  showSlide(currentSlide + (distance < 0 ? 1 : -1), true);
-}, { passive: true });
-
 letterDialog.addEventListener("cancel", () => {
   document.body.style.overflow = "";
-  startAutoPlay();
 });
