@@ -4,23 +4,35 @@
 // ================================================================
 const pageData = {
   anniversaryOn: "2026-09-20",
-  photos: [
-    "images/slide-01.webp",
-    "images/slide-02.webp",
-    "images/slide-03.webp",
-    "images/slide-04.webp",
-    "images/slide-05.webp",
-    "images/slide-06.webp",
-    "images/slide-07.webp",
-    "images/slide-08.webp",
-    "images/slide-09.webp",
-    "images/slide-10.webp",
-    "images/slide-11.webp",
-    "images/slide-12.webp",
-    "images/slide-13.webp",
-    "images/slide-14.webp",
-    "images/slide-15.webp",
-    "images/slide-16.webp",
+  photoRows: [
+    [
+      "images/slide-01.webp",
+      "images/slide-06.webp",
+      "images/slide-09.webp",
+      "images/slide-14.webp",
+      "images/slide-17.webp",
+    ],
+    [
+      "images/slide-03.webp",
+      "images/slide-08.webp",
+      "images/slide-11.webp",
+      "images/slide-15.webp",
+      "images/slide-18.webp",
+    ],
+    [
+      "images/slide-02.webp",
+      "images/slide-07.webp",
+      "images/slide-10.webp",
+      "images/slide-13.webp",
+      "images/slide-19.webp",
+    ],
+    [
+      "images/slide-04.webp",
+      "images/slide-05.webp",
+      "images/slide-12.webp",
+      "images/slide-16.webp",
+      "images/slide-20.webp",
+    ],
   ],
 };
 
@@ -59,23 +71,29 @@ function createPhotoGroup(photos) {
   return group;
 }
 
+function shuffled(photos) {
+  const result = [...photos];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+  }
+  return result;
+}
+
 function createMosaic() {
-  const rowSpeeds = [27, 31, 29, 33];
+  const rowSpeeds = [19, 22, 20, 24];
 
   for (let rowIndex = 0; rowIndex < 4; rowIndex += 1) {
     const row = document.createElement("div");
     const direction = rowIndex % 2 === 0 ? "left" : "right";
     row.className = `mosaic-row mosaic-row--${direction}`;
     row.style.setProperty("--flow-duration", `${rowSpeeds[rowIndex]}s`);
+    row.style.setProperty("--flow-delay", `${-(Math.random() * rowSpeeds[rowIndex]).toFixed(2)}s`);
 
     const track = document.createElement("div");
     track.className = "mosaic-track";
 
-    const offset = rowIndex * 4;
-    const orderedPhotos = Array.from(
-      { length: 8 },
-      (_, photoIndex) => pageData.photos[(offset + photoIndex) % pageData.photos.length],
-    );
+    const orderedPhotos = shuffled(pageData.photoRows[rowIndex]);
 
     const firstGroup = createPhotoGroup(orderedPhotos);
     const secondGroup = createPhotoGroup(orderedPhotos);

@@ -18,8 +18,12 @@
 - `slide-14.webp`
 - `slide-15.webp`
 - `slide-16.webp`
+- `slide-17.webp`
+- `slide-18.webp`
+- `slide-19.webp`
+- `slide-20.webp`
 
-写真の枚数やファイル名は、`script.js` の `photos` で変更できます。
+各段に使う写真や並びは、`script.js` の `photoRows` で変更できます。
 JPEG のほか、PNG や WebP も使用できます。その場合は `file` の拡張子も合わせてください。
 
 スマートフォンの写真は、1枚あたり 1〜2MB 程度まで圧縮すると表示が速くなります。

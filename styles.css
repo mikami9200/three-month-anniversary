@@ -63,6 +63,7 @@ button {
   display: flex;
   width: max-content;
   height: 100%;
+  animation-delay: var(--flow-delay);
   will-change: transform;
 }
 
